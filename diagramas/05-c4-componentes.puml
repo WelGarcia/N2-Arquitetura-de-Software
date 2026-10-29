@@ -1,0 +1,23 @@
+@startuml ArtGalleryC4L3
+!include <C4/C4_Component>
+title ArtGallery - Componentes C4 nivel 3 (proposta)
+ContainerDb(db, "MariaDB", "SQL", "Dados e Outbox")
+Container(mq, "RabbitMQ", "AMQP", "Broker proposto")
+Container_Boundary(api, "API ArtGallery") {
+Component(route, "Routes e middlewares", "Express", "HTTP, autenticacao, validacao")
+Component(ctrl, "Controllers", "Express", "Convertem entrada em comandos")
+Component(uc, "Casos de uso", "JS", "AdicionarComentario / PublicarObra")
+Component(dom, "Dominio", "JS", "Regras de obra e comentario")
+Component(port, "Portas", "Interfaces", "Repositorios, Outbox, UnitOfWork")
+Component(adap, "Adaptadores", "Sequelize", "Persistencia e gravacao Outbox")
+Component(pub, "Publicador Outbox", "Node.js", "Worker futuro")
+}
+Rel(route,ctrl,"Encaminha")
+Rel(ctrl,uc,"Executa")
+Rel(uc,dom,"Aplica regras")
+Rel(uc,port,"Usa abstracoes")
+Rel(adap,port,"Implementa")
+Rel(adap,db,"Grava dados e mensagem")
+Rel(pub,db,"Le pendentes")
+Rel(pub,mq,"Publica evento", "AMQP")
+@enduml

@@ -1,0 +1,28 @@
+@startuml ArtGalleryOutbox
+actor Usuario as U
+participant "Frontend Vue" as F
+participant "API / AddComment" as API
+database MariaDB as DB
+participant "Publicador Outbox" as P
+queue RabbitMQ as MQ
+participant "Worker notificacoes" as W
+queue DLQ
+U -> F : Adiciona comentario
+F -> API : POST /artworks/:artworkId/comments
+group Mesma transacao
+API -> DB : INSERT comentario
+API -> DB : INSERT outbox (CommentAdded.v1)
+end
+API --> F : 201 Created
+... processamento assincrono ...
+P -> DB : consulta pendentes
+P -> MQ : publica CommentAdded.v1
+P -> DB : marca publicada
+MQ -> W : entrega evento
+alt sucesso (idempotente)
+W -> DB : registra notificacao
+W --> MQ : ack
+else repetidas falhas
+MQ -> DLQ : encaminha
+end
+@enduml

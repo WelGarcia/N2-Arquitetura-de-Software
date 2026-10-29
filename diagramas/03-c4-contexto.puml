@@ -1,0 +1,7 @@
+@startuml ArtGalleryC4L1
+!include <C4/C4_Context>
+title ArtGallery - Contexto C4 nivel 1 (estado atual)
+Person(usuario, "Usuario / artista", "Publica obras, consulta, curte e comenta")
+System(artgallery, "ArtGallery", "Plataforma web de exposicao de arte digital")
+Rel(usuario, artgallery, "Usa", "HTTPS")
+@enduml

@@ -1,0 +1,22 @@
+@startuml ArtGalleryC4L2
+!include <C4/C4_Container>
+title ArtGallery - Conteineres C4 nivel 2 (atual + proposto)
+Person(user, "Usuario/artista")
+System_Boundary(ag, "ArtGallery") {
+Container(front, "Frontend", "Vue 3 + Vite", "Interface web - atual")
+Container(api, "API REST", "Node.js + Express + Sequelize", "Casos de uso - atual")
+ContainerDb(db, "MariaDB", "Relacional", "Dados atuais + tabela Outbox (proposta)")
+ContainerDb(files, "Uploads", "Disco local", "Imagens - atual")
+Container(pub, "Publicador Outbox", "Node.js", "Processo proposto")
+Container(mq, "RabbitMQ", "AMQP", "Broker proposto; exchange, filas e DLQ")
+Container(worker, "Worker de notificacoes", "Node.js", "Consumidor proposto")
+}
+Rel(user, front, "Usa", "HTTPS")
+Rel(front, api, "Chama", "HTTP/JSON")
+Rel(api, db, "Ler/gravar + Outbox", "SQL")
+Rel(api, files, "Grava imagens", "fs")
+Rel(pub, db, "Consulta Outbox", "SQL")
+Rel(pub, mq, "Publica eventos", "AMQP")
+Rel(mq, worker, "Entrega eventos", "AMQP")
+Rel(worker, db, "Registra notificacoes", "SQL")
+@enduml

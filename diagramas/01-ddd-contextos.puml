@@ -1,0 +1,13 @@
+@startuml ArtGalleryDDD
+skinparam componentStyle rectangle
+title ArtGallery - Mapa de Bounded Contexts (proposta)
+package "Contas e Perfis" as User { [Usuario] [Perfil] [Autenticacao] }
+package "Catalogo de Obras" as Art { [Obra] [Publicacao] [Titularidade] }
+package "Interacoes" as Inter { [Curtida] [Comentario] }
+package "Descoberta" as Disc { [Feed] [Busca - futura] }
+Art ..> User : referencia autorId
+Inter ..> Art : referencia obraId
+Inter ..> User : referencia usuarioId
+Disc ..> Art : consulta obras
+Disc ..> User : perfis publicos
+@enduml
